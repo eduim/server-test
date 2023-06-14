@@ -156,7 +156,7 @@ One cool feature we can assign the order of the scripts with pre and post, so th
   {
     "pretest": "docker-compose up -d db_test  && dotenv -e .env.test -- prisma migrate reset --force",
     "test": "dotenv -e .env.test -- jest -i",
-    "posttest": "docker-compose down && docker rm db_test"
+    "posttest": "docker rm db_test --force"
   }
 ```
 
