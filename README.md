@@ -7,6 +7,7 @@ You have learned about multiple things at different levels, and now it's time to
 - Setup test enviroment
 - Unit testing with middlewares
 - Integration testing
+- CI with github actions
 
 In this repo, there's a RESTful API written in Typescript. This API handles the resources for an app where users can follow their favorite artists and track their announced gigs, even showing their intent to attend them.
 
@@ -126,9 +127,44 @@ We can try it with `docker-compose up -d db_test`, this command will only run th
 
 Duplicate the `env.test.example` and leave it as `env.test`, as you can see the difference between `.env` and this one is the port used.
 
+When we do tests to functions is really simple to pass arguments and get the returned value. With servers and HTTP requests is a little bit more complex and emulate it's too complex in some cases, that's why we are going to use a package called `supertest` to help us.
+
+`yarn add --dev supertest @types/supertest`
+
+Last package we need is the `dotenv-cli` , this package is going to allow us to select the especific `.env` file we want to run. By default all scripts are going to get the `.env`.
+
+`yarn add --dev dotenv-cli`
+
+All right, the idea of the whole process is to execute the following actions:
+1 Create and start docker test container
+2 Migrate in the database the prisma schema and run the seed if apply
+3 Run the tests
+4 Remove the test container
+
+This process is going to be executed in each test and the way to automate it is with scripts.
+
+1 "docker:test": "docker-compose up -d db_test"
+2 "migrate:test": "dotenv -e .env.test -- prisma migrate reset --force"
+3 "test": "dotenv -e .env.test -- jest -i"
+4 "docker:remove": "docker-compose down && docker rm db_test"
+
+> \*In this case the db_test is not the service but the container name
+
+One cool feature we can assign the order of the scripts with pre and post, so the final scripts should look like:
+
+```
+  {
+    "pretest": "docker-compose up -d db_test  && dotenv -e .env.test -- prisma migrate reset --force",
+    "test": "dotenv -e .env.test -- jest -i",
+    "posttest": "docker-compose down && docker rm db_test"
+  }
+```
+
 ## 📝 Task #2 – Unit tests
 
 ## 📝 Task #3 – Integration tests
+
+## 📝 Task #4 – Github actions
 
 ### Requirements
 

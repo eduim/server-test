@@ -19,7 +19,6 @@ const userAuthorizationMiddleware = async (
   try {
     const { userId } = checkToken(token) as DecodedToken
 
-    req
     req.userId = userId as number
 
     next()
