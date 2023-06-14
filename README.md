@@ -4,9 +4,9 @@
 
 You have learned about multiple things at different levels, and now it's time to put them into practice. Specifically, we want to practice the following concepts:
 
-- Applied TypeScript
-- Authentication & Authorization
-- World-class back-end testing
+- Setup test enviroment
+- Unit testing with middlewares
+- Integration testing
 
 In this repo, there's a RESTful API written in Typescript. This API handles the resources for an app where users can follow their favorite artists and track their announced gigs, even showing their intent to attend them.
 
@@ -24,7 +24,7 @@ The idea here is to **add authentication capabilities**, so users and bands can 
 
 All this while keeping the correctness of your TypeScript code and modifying existing tests to adapt to the features or creating new ones to keep the testing coverage of your code.
 
-## 💽 Setup
+## 💽 Setup base exercise
 
 1. Duplicate both env files, and change the `DATABASE_URL,` so it points to the correct database in your machine. Remember to create them if they don't exist.
    1. `.env.default` →`.env`
@@ -32,11 +32,103 @@ All this while keeping the correctness of your TypeScript code and modifying exi
 2. Install dependencies with `yarn`
 3. Check that the tests are fully functioning with the `yarn test` command. This command should run both unit and integration tests and pass. If they don't, please, ask for assistance.
 
+> ⚠️ As you're asked to complete this task first, don't worry about the tests. Most likely, you're breaking their integrity by implementing these new features. You will modify the tests in the next task, so they pass again.
+
 ## 📝 Task #1 – Setup enviroment
 
-> ⚠️ As you're asked to complete this task first, don't worry about the tests. Most likely, you're breaking their integrity by implementing these new features. You will modify the tests in the next task, so they pass again.
->
-> TL;DR Ignore the tests for this step.
+`yarn add --dev jest @types/jest ts-jest`
+
+> Install jest framework (jest)
+> Install the types for jest (@types/jest)
+> Install the TypeScript preprocessor for jest (ts-jest) which allows jest to transpile TypeScript on the fly and have source-map support built in.
+
+Now we need to configure jest, for that add `jest.config.js` and add the following config
+
+```
+module.exports = {
+  "roots": [
+    "<rootDir>/src"
+  ],
+  "testMatch": [
+    "**/__tests__/**/*.+(ts|tsx|js)",
+    "**/?(*.)+(spec|test).+(ts|tsx|js)"
+  ],
+  "transform": {
+    "^.+\\.(ts|tsx)$": "ts-jest"
+  },
+}
+```
+
+> We always recommend having all TypeScript files in a src folder in your project. We assume this is true and specify this using the roots option.
+> The testMatch config is a glob pattern matcher for discovering .test / .spec files in ts / tsx / js format.
+> The transform config just tells jest to use ts-jest for ts / tsx files.
+
+Now we need to run the tests, add the following script to the `package.json`
+
+```
+{
+  "test": "jest"
+}
+```
+
+If you run it, it's going to complain, let's add a folder with a file `__test__/example.test.ts` in the src folder and make a simple test
+
+```
+const sum = (a: number, b: number) => {
+  return a + b
+}
+
+test('adds 1 + 2 to equal 3', () => {
+  expect(sum(1, 2)).toBe(3)
+})
+
+```
+
+It should run it fine now.
+
+#### Test environment
+
+Separate test and development environments are important for software development as they provide a controlled space for testing changes, ensure stability, facilitate collaboration, aid in issue identification, and improve the overall quality of software releases.
+
+In this specific case we need to use another database to run all the tests without interfeer with production/development data, this approach is going to help building correctly all the tests.
+
+First of all in the `docker-compose.yml` we can duplicate the specs of the postgres container but changing names and the port.
+
+The file should look like this:
+
+```
+services:
+  db:
+    image: postgres
+    restart: always
+    container_name: db
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mydatabase
+  db_test:
+    image: postgres
+    restart: always
+    container_name: db_test
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mydatabase
+```
+
+We can try it with `docker-compose up -d db_test`, this command will only run the second service defined
+
+> note: In the command `db_test` only refers to the service name , not to the `container_name`
+
+Duplicate the `env.test.example` and leave it as `env.test`, as you can see the difference between `.env` and this one is the port used.
+
+## 📝 Task #2 – Unit tests
+
+## 📝 Task #3 – Integration tests
 
 ### Requirements
 
