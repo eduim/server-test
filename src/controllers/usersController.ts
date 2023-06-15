@@ -12,17 +12,28 @@ import User from '../models/usersModels'
 const UsersController = {
   async createUser(req: Request, res: Response, next: NextFunction) {
     try {
+      console.log(req.body)
       const { name, password, email } = req.body
 
       if (!name || !password || !email) {
         throw new Error('Name, email and password are required')
       }
+
+      const emailAlreadyExists = await User.getUserByEmail(email)
+
+      console.log(emailAlreadyExists)
+
+      if (emailAlreadyExists) {
+        throw new Error('Email already exists')
+      }
+
       const hashedPassword = await hashPassword(password)
 
       const user = await User.create(name, hashedPassword, email)
-
+      console.log('here')
       res.status(201).json(user)
     } catch (e) {
+      console.log('passin gerror')
       next(e)
     }
   },
