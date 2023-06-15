@@ -1,18 +1,26 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import Logger from '../lib/logger'
 
-function errorHandler(error: Error, _: Request, res: Response): void {
+function errorHandler(
+  error: Error,
+  _: Request,
+  res: Response,
+  _next: NextFunction
+): void {
   if (error.constructor === PrismaClientKnownRequestError) {
     const prismaError = error as PrismaClientKnownRequestError
     res.status(400).json(prismaCustomError(prismaError))
+
     return
   } else if (error.message) {
     res.status(400).json({ error: error.message })
+
     return
   }
   Logger.error(error)
   res.status(500)
+
   return
 }
 

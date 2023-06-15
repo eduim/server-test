@@ -23,12 +23,10 @@ describe('POST /users', () => {
       name: 'test',
       email: 'test',
     })
-    console.log(response.body)
+
     expect(response.status).toBe(400)
     expect(response.body).toEqual({
-      id: 1,
-      name: 'test',
-      createdAt: expect.any(String),
+      error: 'Name, email and password are required',
     })
   })
 })
@@ -36,12 +34,23 @@ describe('POST /users', () => {
 describe('POST /posts', () => {
   test('Should create post', async () => {
     const token = generateToken(1)
-    console.log(token)
-    // const response = await request(app)
-    //   .get('/me')
-    //   .set('Cookie', [`AUTHORIZATION=BEARER ${token} ; Max-Age=90000;`])
-    // expect(response.status).toBe(201)
-    // expect(response.body).toEqual(1)
+    const response = await request(app)
+      .post('/posts')
+      .send({
+        title: 'test',
+        text: 'test',
+      })
+      .set('Cookie', [`AUTHORIZATION=BEARER ${token}`])
+
+    expect(response.status).toBe(201)
+    expect(response.body).toEqual({
+      id: expect.any(Number),
+      title: 'test',
+      text: 'test',
+      creaedAt: expect.any(String),
+      publish: false,
+      authorId: expect.any(Number),
+    })
   })
   test('Should return error when not passed cookies', async () => {})
 })
