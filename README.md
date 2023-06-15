@@ -162,6 +162,99 @@ One cool feature we can assign the order of the scripts with pre and post, so th
 
 ## 📝 Task #2 – Unit tests
 
+Usually this kind of tests are used for specific functions, in our case we want to verify that the auth and the error handler middlewares are working correctly.
+
+Let's start with auth by adding to the middlewares folder a new test folder and file `/middlewares/__tests__/auth.test.ts`
+
+In this middle ware we get the cookies and evaluate if the token provided is valid or not. In first place we need to create a token (we can use the helper functions) and then attach to the cookie in the headers of the request.
+
+```
+import { NextFunction, Request, Response } from 'express'
+import { test, describe } from '@jest/globals'
+import { generateToken } from '../../lib/helpers'
+import userAuthorizationMiddleware from '../user-auth'
+
+interface authRequest extends Request {
+  userId: number
+}
+
+describe('Auth middleware', () => {
+  let mockRequest: Partial<authRequest>
+  let mockResponse: Partial<Response>
+  let nextFunction: NextFunction = jest.fn()
+
+  const token = generateToken(1)
+
+  beforeEach(() => {
+    mockRequest = {
+      headers: {
+        cookie: `AUTHORIZATION=BEARER ${token}`,
+      },
+      userId: undefined,
+    }
+    mockResponse = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    }
+  })
+
+  test('Should pass for a valid token', async () => {
+    userAuthorizationMiddleware(
+      mockRequest as Request,
+      mockResponse as Response,
+      nextFunction
+    )
+
+    expect(mockRequest.userId).toBe(1)
+    expect(nextFunction).toHaveBeenCalled()
+  })
+
+  test('Should not pass for a invalid token', async () => {
+    if (mockRequest.headers) {
+      mockRequest.headers.cookie = `AUTHORIZATION=BEARER ${token}123`
+    }
+
+    userAuthorizationMiddleware(
+      mockRequest as Request,
+      mockResponse as Response,
+      nextFunction
+    )
+
+    expect(mockRequest.userId).toBe(undefined)
+    expect(nextFunction).toHaveBeenCalledWith(expect.any(Error))
+  })
+})
+```
+
+```
+import errorHandler from '../error-handler'
+import { Request, Response } from 'express'
+
+describe('Error handler middleware', () => {
+  const error = new Error('Test')
+
+  let mockRequest: Partial<Request>
+  let mockResponse: Partial<Response>
+
+  beforeEach(() => {
+    mockRequest = {}
+    mockResponse = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    }
+  })
+
+  test('handle error when error includes statusCode', async () => {
+    errorHandler(error, mockRequest as Request, mockResponse as Response)
+
+    expect(mockResponse.status).toHaveBeenCalledWith(400)
+    expect(mockResponse.json).toHaveBeenCalledWith({ error: error.message })
+  })
+})
+
+
+```
+
 ## 📝 Task #3 – Integration tests
 
 ## 📝 Task #4 – Github actions

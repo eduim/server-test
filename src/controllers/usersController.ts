@@ -14,8 +14,8 @@ const UsersController = {
     try {
       const { name, password, email } = req.body
 
-      if (!name || !password) {
-        throw new Error('Name and password are required')
+      if (!name || !password || !email) {
+        throw new Error('Name, email and password are required')
       }
       const hashedPassword = await hashPassword(password)
 
@@ -37,7 +37,7 @@ const UsersController = {
 
       //username is email
       const { username, password } = getUserFromBearerAuth(bearerHeaders)
-      console.log(username, password)
+
       if (!username || !password) {
         throw new Error('Email and password are required')
       }
@@ -54,6 +54,7 @@ const UsersController = {
 
       const token = generateToken(user.id)
       console.log(token)
+
       res.setHeader(
         `Set-Cookie`,
         `AUTHORIZATION=BEARER ${token}; Max-Age=90000;`
