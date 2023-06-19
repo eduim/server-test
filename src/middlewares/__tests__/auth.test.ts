@@ -22,7 +22,6 @@ describe('Auth middleware', () => {
       userId: undefined,
     }
     mockResponse = {
-      status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     }
   })
