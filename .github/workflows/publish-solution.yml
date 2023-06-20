@@ -1,0 +1,49 @@
+name: Publish solution
+on:
+  push:
+    branches:
+      - 'main'
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - name: Install dependencies
+        run: yarn
+  publish-solution:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - name: Install dependencies
+        run: yarn
+      - name: 'Automated Version Bump (no push)'
+        uses: phips28/gh-action-bump-version@v9.0.16
+        with:
+          skip-push: 'true'
+      - run: yarn gulp
+      - run: yarn prettier gulp-dist -w
+      - uses: cpina/github-action-push-to-another-repository@v1.4.2
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source-directory: 'gulp-dist'
+          user-email: arol.vinolas@gmail.com
+          user-name: arol
+          destination-github-username: 'arol-dev'
+          destination-repository-name: 'assessment-6-wallet'
+          target-branch: main
+          commit-message: ${{github.event.head_commit.message}}
+      - name: 'Push bumped version'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}

@@ -1,3 +1,4 @@
+/* removeIf(exercise) */
 import { NextFunction, Request, Response } from 'express'
 import { test, describe } from '@jest/globals'
 import { generateToken } from '../../lib/helpers'
@@ -52,3 +53,4 @@ describe('Auth middleware', () => {
     expect(nextFunction).toHaveBeenCalledWith(expect.any(Error))
   })
 })
+/* endRemoveIf(exercise) */

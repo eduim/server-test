@@ -1,3 +1,4 @@
+/* removeIf(exercise) */
 import request from 'supertest'
 import app from '../app'
 import { generateToken } from '../lib/helpers'
@@ -54,3 +55,4 @@ describe('POST /posts', () => {
   })
   test('Should return error when not passed cookies', async () => {})
 })
+/* endRemoveIf(exercise) */

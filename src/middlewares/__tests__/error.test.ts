@@ -1,3 +1,4 @@
+/* removeIf(exercise) */
 import errorHandler from '../error-handler'
 import { Request, Response, NextFunction } from 'express'
 
@@ -29,3 +30,4 @@ describe('Error handler middleware', () => {
     expect(mockResponse.json).toHaveBeenCalledWith({ error: error.message })
   })
 })
+/* endRemoveIf(exercise) */
