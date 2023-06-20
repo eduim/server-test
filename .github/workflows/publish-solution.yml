@@ -39,7 +39,7 @@ jobs:
           user-email: arol.vinolas@gmail.com
           user-name: arol
           destination-github-username: 'arol-dev'
-          destination-repository-name: 'assessment-6-wallet'
+          destination-repository-name: 'backend-testing'
           target-branch: main
           commit-message: ${{github.event.head_commit.message}}
       - name: 'Push bumped version'
