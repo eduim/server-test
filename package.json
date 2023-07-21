@@ -11,9 +11,9 @@
     "build": "tsc",
     "dev": "nodemon src/index.ts",
     "lint": "eslint ./src/**",
-    "pretest": "docker-compose up -d db_test  && dotenv -e .env.test -- prisma migrate reset --force",
+    "pretest": "docker-compose -f docker-compose.test.yml up -d && dotenv -e .env.test -- prisma migrate deploy",
     "test": "dotenv -e .env.test -- jest -i",
-    "posttest": "docker rm db_test --force"
+    "posttest": "docker stop db_test && docker container rm db_test"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
