@@ -53,6 +53,5 @@ describe('POST /posts', () => {
       authorId: expect.any(Number),
     })
   })
-  test('Should return error when not passed cookies', async () => {})
 })
 /* endRemoveIf(exercise) */
