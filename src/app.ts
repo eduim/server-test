@@ -18,7 +18,7 @@ app.use(router)
 app.use(authRouter)
 
 app.use(errorHandler)
-export function startServer(): Server {
+function startServer(): Server {
   const server = app.listen(port, () => {
     Logger.info(`[server]: Server is running at http://localhost:${port}`)
   })
@@ -29,4 +29,4 @@ export function startServer(): Server {
   return server
 }
 
-export default app
+export default startServer

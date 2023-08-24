@@ -1,7 +1,9 @@
 /* removeIf(exercise) */
 import request from 'supertest'
-import app from '../app'
+import  startServer  from '../app'
 import { generateToken } from '../lib/helpers'
+
+const app = startServer()
 
 describe('POST /users', () => {
   test('Should create user', async () => {
